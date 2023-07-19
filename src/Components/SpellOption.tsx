@@ -1,10 +1,14 @@
-import { Avatar, Card, Group, Stack, Text, createStyles } from '@mantine/core';
-import { useState } from 'react';
-import { IChampSpell } from '../App';
+import { Avatar, Card, Popover, Group, Stack, Text, createStyles } from '@mantine/core';
+import { useState, useEffect } from 'react';
+import { IChamp, IChampSpell } from '../App';
 import { useChampContext } from '../Context/ContextProvider';
 
 interface SpellOptionProps {
-  spell: IChampSpell
+  spell: IChampSpell,
+  isCorrect: boolean,
+  champName: string,
+  disabled: boolean,
+  setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
 const useStyles = createStyles((theme) => ({
@@ -17,40 +21,57 @@ const useStyles = createStyles((theme) => ({
     },
     width: 250,
     height: 100,
-    minWidth: 250,
-    maxWidth: 250,
+    minWidth: 300,
+    maxWidth: 300,
     alignItems: 'center'
   },
+  dropdown: {
+    opacity: .9
+  }
 }));
 
-export const SpellOption = ({ spell }: SpellOptionProps) => {
+export const SpellOption = ({ spell, isCorrect }: SpellOptionProps) => {
   const { classes, theme } = useStyles();
-  const champContext  = useChampContext();
-  const [ correct, setCorrect ] = useState<boolean>(false)
+  const champContext = useChampContext();
+  const [correct, setCorrect] = useState<boolean>(false);
+  const [inCorrect, setInCorrect] = useState<boolean>(false);
+
+  useEffect(() => {
+    setCorrect(false);
+    setInCorrect(false)
+  }, [])
 
   const handleClick = () => {
-    const flatSpellIds = champContext?.currentChamp.champSpells.map((champSpell) => champSpell.id);
-    if(flatSpellIds?.includes(spell.id)){
-      setCorrect(true);
-      champContext?.updateCurrentResults(true);
-    } else {
-      champContext?.updateCurrentResults(false);
+    if (!champContext?.quiz?.finished) {
+      champContext?.setQuizFinished(true);
+      if (isCorrect) {
+        setCorrect(true)
+        champContext?.updateCurrentResults(true);
+      } else {
+        setInCorrect(true);
+        champContext?.updateCurrentResults(false);
+      }
     }
   }
 
-  // TODO only show description on answer
   return (
-    <div style={{display: 'flex', width: '100%', height: '100%', justifyContent: 'center'}} onClick={handleClick}>
-      <Card className={classes.card} component='button' style={{ maxWidth: 300, backgroundColor: correct ? 'green' : theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white }} id={spell.id} withBorder radius="md">
-        <Stack justify="space-between">
-          <Group position="apart">
-            <Text>{spell.name}</Text>
-            <Avatar src={spell.image} radius="xl" size="md" />
-          </Group>
-          {/* <Group position="apart">
-            <Text size='sm'>{champSpell.description}</Text>
-          </Group> */}
-        </Stack>
-      </Card>
-    </div>)
+    <div style={{ display: 'flex', width: '100%', height: '100%', justifyContent: 'center' }}>
+      {champContext?.quiz?.finished ?
+        <Card withBorder style={{ backgroundColor: isCorrect ? 'green' : inCorrect ? 'red' : theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white }}>
+          <Avatar src={spell.image} radius="xl" size="md"></Avatar>
+          <Text size="xs" mb="xs" weight={500}>
+            {spell.description}
+          </Text>
+        </Card> :
+        <Card onClick={handleClick} className={classes.card} component='button' style={{ maxWidth: 300, backgroundColor: correct ? 'green' : inCorrect ? 'red' : theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white }} id={spell.id} withBorder radius="md">
+          <Stack justify="space-between">
+            <Group position="apart">
+              <Text>{spell.name}</Text>
+              <Avatar src={spell.image} radius="xl" size="md" />
+            </Group>
+          </Stack>
+        </Card>
+      }
+    </div>
+  )
 };

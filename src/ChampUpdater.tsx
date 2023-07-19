@@ -5,11 +5,12 @@ import jinxData from './RiotApiData//JinxData.json';
 import allChampData from './RiotApiData/AllChampData.json';
 import { IChamp, IChampSpell } from './App';
 
-export function selectNewChamp(updateCurrentChamp: ((newChamp: IChamp) => void | undefined) | undefined) {
+// right now just updates to jinx from ashe, need to use api data and randomize
+export function selectNewChampAndUpdateQuiz(updateCurrentChamp: ((newChamp: IChamp) => void | undefined) | undefined, setupCurrentQuiz: ((newChamp: IChamp) => void | undefined) | undefined) {
   const currChampOverview = allChampData.data['Jinx'];
   const champSpecifics = jinxData.data['Jinx'];
 
-  if (updateCurrentChamp) {
+  if (updateCurrentChamp && setupCurrentQuiz) {
     const champSpells: IChampSpell[] = champSpecifics.spells.map((spell) => {
       return {
         id: spell.id,
@@ -33,5 +34,6 @@ export function selectNewChamp(updateCurrentChamp: ((newChamp: IChamp) => void |
     }
 
     updateCurrentChamp(champ);
+    setupCurrentQuiz(champ);
   }
 }

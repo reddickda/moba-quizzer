@@ -1,14 +1,13 @@
 import { Grid, Text, Stack, Button } from '@mantine/core';
 import { useEffect } from 'react'
-import { CurrentChamp } from './Components/CurrentChamp';
 import { ThemeProvider } from './ThemeProvider';
 // http://ddragon.leagueoflegends.com/cdn/13.14.1/data/en_US/champion/Ashe.json
 import asheData from './RiotApiData/AsheData.json';
 // http://ddragon.leagueoflegends.com/cdn/13.13.1/data/en_US/champion.json
 import allChampData from './RiotApiData/AllChampData.json';
-import { SpellSelection } from './Components/SpellSelection';
 import { useChampContext } from './Context/ContextProvider';
-import { selectNewChamp } from './ChampUpdater';
+import { selectNewChampAndUpdateQuiz } from './ChampUpdater';
+import { ChampAndQuizContent } from './Components/ChampAndQuizContent';
 
 export interface IChampSpell {
   id: string,
@@ -64,10 +63,11 @@ export default function App() {
     }
 
     champContext?.updateCurrentChamp(champ);
+    champContext?.setupCurrentQuiz(champ);
   }, [])
 
   const handleNextChamp = () => {
-    selectNewChamp(champContext?.updateCurrentChamp)
+    selectNewChampAndUpdateQuiz(champContext?.updateCurrentChamp, champContext?.setupCurrentQuiz)
   }
 
   return (
@@ -76,11 +76,7 @@ export default function App() {
         <Text>League of Legends Quiz</Text>
         <Text>Learn all champs easy with this tool!</Text>
         {champContext?.currentChamp &&
-          <>
-            <CurrentChamp currentChamp={champContext?.currentChamp} />
-            <Text>Current Score: {champContext.currentResults.numberCorrect} / {champContext.currentResults.total} </Text>
-            <SpellSelection champSpells={champContext?.currentChamp.champSpells} champName={champContext?.currentChamp.name} />
-          </>
+          <ChampAndQuizContent />
         }
         <Grid p={5}>
           <Grid.Col span={6}>

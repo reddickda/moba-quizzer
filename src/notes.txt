@@ -12,3 +12,4 @@ Partner with neace and pay for ad campaign on his videos
 rework quiz style
 - maybe contain to just the selection stuff
 - handle the correct question blah blah - quiz context? where do we handle state for questions (correct, incorrect colors etc)
+- load entire quiz at once and use a stepper or something to go through 
