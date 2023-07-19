@@ -1,0 +1,14 @@
+Reveal answer button
+keep score
+share with friends
+track progress
+Do a weekly query for champs and store in relational db and just query from there
+Display image, which champ is this, what are their abilities
+Get model asset as well and display using three js
+When correct show a short blurb about strengths and weaknesses? At least a small description of champ and strategy
+Partner with neace and pay for ad campaign on his videos
+
+
+rework quiz style
+- maybe contain to just the selection stuff
+- handle the correct question blah blah - quiz context? where do we handle state for questions (correct, incorrect colors etc)
